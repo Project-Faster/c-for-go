@@ -20,10 +20,15 @@ type Generator struct {
 	rand          *rand.Rand
 	noTimestamps  bool
 	maxMem        MemSpec
+	baseDir       string
 }
 
 func (g *Generator) DisableTimestamps() {
 	g.noTimestamps = true
+}
+
+func (g *Generator) SetBaseDir(baseDir string) {
+	g.baseDir = baseDir
 }
 
 type TraitFlagGroup struct {

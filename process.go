@@ -127,7 +127,9 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 	return c, nil
 }
 
-func (c *Process) Generate(noCGO bool) {
+func (c *Process) Generate(noCGO bool, basePath string) {
+	c.gen.SetBaseDir(basePath)
+
 	main := c.goBuffers[BufMain]
 	if wr, ok := c.goBuffers[BufDoc]; ok {
 		if !c.gen.WriteDoc(wr) {

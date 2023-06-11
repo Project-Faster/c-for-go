@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	basePath   = flag.String("path", "", "Basedir to substitute to <basepath> token")
 	outputPath = flag.String("out", "", "Specify a `dir` for the output.")
 	noCGO      = flag.Bool("nocgo", false, "Do not include a cgo-specific header in resulting files.")
 	ccDefs     = flag.Bool("ccdefs", false, "Use built-in defines from a hosted C-compiler.")
@@ -81,7 +82,7 @@ func main() {
 		if err != nil {
 			log.Fatalln("[ERR]", err)
 		}
-		process.Generate(*noCGO)
+		process.Generate(*noCGO, *basePath)
 		if err := process.Flush(*noCGO); err != nil {
 			log.Fatalln("[ERR]", err)
 		}

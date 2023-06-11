@@ -51,7 +51,7 @@ func (gen *Generator) WriteIncludes(wr io.Writer) {
 		writeSysInclude(wr, path)
 	}
 	for _, path := range gen.cfg.Includes {
-		writeInclude(wr, path)
+		writeInclude(wr, path, gen.baseDir)
 	}
 	writeCStdIncludes(wr, gen.cfg.SysIncludes)
 	fmt.Fprintln(wr, `#include "cgo_helpers.h"`)
@@ -90,7 +90,7 @@ func (gen *Generator) writeCHHelpersHeader(wr io.Writer) {
 		writeSysInclude(wr, path)
 	}
 	for _, path := range gen.cfg.Includes {
-		writeInclude(wr, path)
+		writeInclude(wr, path, gen.baseDir)
 	}
 	writeCStdIncludes(wr, gen.cfg.SysIncludes)
 	writeCHPragma(wr)
@@ -154,7 +154,8 @@ func writeSysInclude(wr io.Writer, path string) {
 	fmt.Fprintf(wr, "#include <%s>\n", path)
 }
 
-func writeInclude(wr io.Writer, path string) {
+func writeInclude(wr io.Writer, path, basedir string) {
+	path = strings.Replace(path, "<basedir>", basedir, -1)
 	fmt.Fprintf(wr, "#include \"%s\"\n", path)
 }
 
