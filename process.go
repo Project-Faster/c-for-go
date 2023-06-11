@@ -64,17 +64,30 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 	if err := yaml.Unmarshal(cfgData, &cfg); err != nil {
 		return nil, err
 	}
-	if cfg.Generator != nil {
-		paths := includePathsFromPkgConfig(cfg.Generator.PkgConfigOpts)
-		if cfg.Parser == nil {
-			cfg.Parser = &parser.Config{}
-		}
-		cfg.Parser.CCDefs = *ccDefs
-		cfg.Parser.CCIncl = *ccIncl
-		cfg.Parser.IncludePaths = append(cfg.Parser.IncludePaths, paths...)
-		cfg.Parser.IncludePaths = append(cfg.Parser.IncludePaths, filepath.Dir(configPath))
-	} else {
+	if cfg.Generator == nil {
 		return nil, errors.New("process: generator config was not specified")
+	}
+
+	paths := includePathsFromPkgConfig(cfg.Generator.PkgConfigOpts)
+	if cfg.Parser == nil {
+		cfg.Parser = &parser.Config{}
+	}
+	cfg.Parser.CCDefs = *ccDefs
+	cfg.Parser.CCIncl = *ccIncl
+	cfg.Parser.IncludePaths = append(cfg.Parser.IncludePaths, paths...)
+	cfg.Parser.IncludePaths = append(cfg.Parser.IncludePaths, filepath.Dir(configPath))
+
+	for i := 0; i < len(cfg.Parser.IncludePaths); i++ {
+		cfg.Parser.IncludePaths[i] = strings.Replace(cfg.Parser.IncludePaths[i], "<basedir>", *basePath, -1)
+	}
+	for i := 0; i < len(cfg.Parser.SourcesPaths); i++ {
+		cfg.Parser.SourcesPaths[i] = strings.Replace(cfg.Parser.SourcesPaths[i], "<basedir>", *basePath, -1)
+	}
+
+	for _, group := range cfg.Generator.FlagGroups {
+		for i := 0; i < len(group.Flags); i++ {
+			group.Flags[i] = strings.Replace(group.Flags[i], "<basedir>", *basePath, -1)
+		}
 	}
 
 	// parse the headers
