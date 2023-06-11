@@ -78,15 +78,18 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 	cfg.Parser.IncludePaths = append(cfg.Parser.IncludePaths, filepath.Dir(configPath))
 
 	for i := 0; i < len(cfg.Parser.IncludePaths); i++ {
-		cfg.Parser.IncludePaths[i] = strings.Replace(cfg.Parser.IncludePaths[i], "<basedir>", *basePath, -1)
+		tmp := strings.Replace(cfg.Parser.IncludePaths[i], "<basedir>", "tmp", -1)
+		cfg.Parser.IncludePaths[i] = filepath.Join(*basePath, tmp)
 	}
 	for i := 0; i < len(cfg.Parser.SourcesPaths); i++ {
-		cfg.Parser.SourcesPaths[i] = strings.Replace(cfg.Parser.SourcesPaths[i], "<basedir>", *basePath, -1)
+		tmp := strings.Replace(cfg.Parser.SourcesPaths[i], "<basedir>", "tmp", -1)
+		cfg.Parser.SourcesPaths[i] = filepath.Join(*basePath, tmp)
 	}
 
 	for _, group := range cfg.Generator.FlagGroups {
 		for i := 0; i < len(group.Flags); i++ {
-			group.Flags[i] = strings.Replace(group.Flags[i], "<basedir>", *basePath, -1)
+			tmp := strings.Replace(group.Flags[i], "<basedir>", *basePath, -1)
+			group.Flags[i] = filepath.Join(*basePath, tmp)
 		}
 	}
 
