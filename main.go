@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -48,6 +49,8 @@ func init() {
 		fmt.Println()
 		log.Fatalln("[ERR] no package configuration files have been provided.")
 	}
+
+	*basePath = strings.Replace(*basePath, "\\", "/", -1)
 }
 
 func main() {

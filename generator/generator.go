@@ -27,10 +27,6 @@ func (g *Generator) DisableTimestamps() {
 	g.noTimestamps = true
 }
 
-func (g *Generator) SetBaseDir(baseDir string) {
-	g.baseDir = baseDir
-}
-
 type TraitFlagGroup struct {
 	Name   string   `yaml:"name"`
 	Traits []string `yaml:"traits"`

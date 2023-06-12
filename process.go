@@ -78,18 +78,27 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 	cfg.Parser.IncludePaths = append(cfg.Parser.IncludePaths, filepath.Dir(configPath))
 
 	for i := 0; i < len(cfg.Parser.IncludePaths); i++ {
-		tmp := strings.Replace(cfg.Parser.IncludePaths[i], "<basedir>", "tmp", -1)
-		cfg.Parser.IncludePaths[i] = filepath.Join(*basePath, tmp)
+		if !strings.Contains(cfg.Parser.IncludePaths[i], "<basedir>") {
+			continue
+		}
+		tmp := strings.Replace(cfg.Parser.IncludePaths[i], "<basedir>", "", -1)
+		cfg.Parser.IncludePaths[i] = strings.Replace(*basePath+"/"+tmp, "\\", "/", -1)
 	}
 	for i := 0; i < len(cfg.Parser.SourcesPaths); i++ {
-		tmp := strings.Replace(cfg.Parser.SourcesPaths[i], "<basedir>", "tmp", -1)
-		cfg.Parser.SourcesPaths[i] = filepath.Join(*basePath, tmp)
+		if !strings.Contains(cfg.Parser.SourcesPaths[i], "<basedir>") {
+			continue
+		}
+		tmp := strings.Replace(cfg.Parser.SourcesPaths[i], "<basedir>", "", -1)
+		cfg.Parser.SourcesPaths[i] = strings.Replace(*basePath+"/"+tmp, "\\", "/", -1)
 	}
 
 	for _, group := range cfg.Generator.FlagGroups {
 		for i := 0; i < len(group.Flags); i++ {
-			tmp := strings.Replace(group.Flags[i], "<basedir>", *basePath, -1)
-			group.Flags[i] = filepath.Join(*basePath, tmp)
+			if !strings.Contains(group.Flags[i], "<basedir>") {
+				continue
+			}
+			tmp := strings.Replace(group.Flags[i], "<basedir>", filepath.Clean(*basePath), -1)
+			group.Flags[i] = strings.Replace(tmp, "\\", "/", -1)
 		}
 	}
 
@@ -144,8 +153,6 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 }
 
 func (c *Process) Generate(noCGO bool, basePath string) {
-	c.gen.SetBaseDir(basePath)
-
 	main := c.goBuffers[BufMain]
 	if wr, ok := c.goBuffers[BufDoc]; ok {
 		if !c.gen.WriteDoc(wr) {
