@@ -22,6 +22,7 @@ var (
 	maxMem     = flag.String("maxmem", "0x7fffffff", "Specifies platform's memory cap the generated code.")
 	fancy      = flag.Bool("fancy", true, "Enable fancy output in the term.")
 	nostamp    = flag.Bool("nostamp", false, "Disable printing timestamps in the output files.")
+	syncCGO    = flag.Bool("withsync", false, "Enable synchronous locks for CGO methods.")
 	debug      = flag.Bool("debug", false, "Enable some debug info.")
 )
 

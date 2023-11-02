@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var generatedLocks map[string]bool
+
 func genLabel(noTimestamps bool) string {
 	// These headers comply with a recognized format for generated code, so that
 	// static analysis tools may recognize the code as generated and skip
@@ -57,7 +59,20 @@ func (gen *Generator) WriteIncludes(wr io.Writer) {
 	fmt.Fprintln(wr, `#include "cgo_helpers.h"`)
 	writeEndComment(wr)
 	fmt.Fprintln(wr, `import "C"`)
-	writeSpace(wr, 1)
+	if !gen.withLocks {
+		return
+	}
+
+	if generatedLocks == nil {
+		generatedLocks = make(map[string]bool)
+	}
+	if _, ok := generatedLocks[gen.cfg.PackageName]; !ok {
+		fmt.Fprintln(wr, `import "sync"`)
+		writeSpace(wr, 1)
+		fmt.Fprintf(wr, "var mtx_%s sync.Mutex\n", gen.cfg.PackageName)
+		writeSpace(wr, 1)
+		generatedLocks[gen.cfg.PackageName] = true
+	}
 }
 
 func hasLib(paths []string, lib string) bool {

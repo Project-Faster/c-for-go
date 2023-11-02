@@ -152,6 +152,9 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 	if *nostamp {
 		gen.DisableTimestamps()
 	}
+	if *syncCGO {
+		gen.WithSynchronousLocks()
+	}
 	c := &Process{
 		cfg:          cfg,
 		gen:          gen,

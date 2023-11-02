@@ -1020,6 +1020,11 @@ func (gen *Generator) submitHelper(h *Helper) {
 
 func (gen *Generator) writeFunctionBody(wr io.Writer, decl *tl.CDecl) {
 	writeStartFuncBody(wr)
+	if gen.withLocks {
+		fmt.Fprintf(wr, "mtx_%s.Lock()\ndefer mtx_%s.Unlock()\n", gen.cfg.PackageName, gen.cfg.PackageName)
+		writeSpace(wr, 1)
+	}
+
 	wr2 := new(reverseBuffer)
 	from, to := gen.createProxies(decl.Name, decl.Spec)
 	for _, proxy := range from {

@@ -19,12 +19,17 @@ type Generator struct {
 	helpersChan   chan *Helper
 	rand          *rand.Rand
 	noTimestamps  bool
+	withLocks     bool
 	maxMem        MemSpec
 	baseDir       string
 }
 
 func (g *Generator) DisableTimestamps() {
 	g.noTimestamps = true
+}
+
+func (g *Generator) WithSynchronousLocks() {
+	g.withLocks = true
 }
 
 type TraitFlagGroup struct {
