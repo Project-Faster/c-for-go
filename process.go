@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"io/fs"
 	"io/ioutil"
 	"log"
@@ -103,11 +104,15 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 		}
 	}
 
+	spew.Dump(cfg.Parser)
+
 	// parse the headers
+	log.Printf("Parser start")
 	unit, err := parser.ParseWith(cfg.Parser)
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("Translator end")
 
 	if cfg.Translator == nil {
 		cfg.Translator = &translator.Config{}
@@ -135,11 +140,14 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 
 	cfg.Translator.LongIs64Bit = unit.ABI.Types[cc.Long].Size == 8
 	// learn the model
+	log.Printf("Translator start")
 	tl, err := translator.New(cfg.Translator)
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("Translator learn")
 	tl.Learn(unit)
+	log.Printf("Translator end")
 
 	// begin generation
 	pkg := filepath.Base(cfg.Generator.PackageName)
@@ -177,6 +185,9 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 }
 
 func (c *Process) Generate(noCGO bool, basePath string) {
+	log.Printf("Generate start")
+	defer log.Printf("Generate end")
+
 	main := c.goBuffers[BufMain]
 	if wr, ok := c.goBuffers[BufDoc]; ok {
 		if !c.gen.WriteDoc(wr) {
@@ -228,6 +239,10 @@ func (c *Process) Generate(noCGO bool, basePath string) {
 func (c *Process) Flush(noCGO bool) error {
 	c.gen.Close()
 	c.genSync.Wait()
+
+	log.Printf("Flush start")
+	defer log.Printf("Flush end")
+
 	filePrefix := filepath.Join(c.outputPath, c.cfg.Generator.PackageName)
 	if err := os.MkdirAll(filePrefix, 0755); err != nil {
 		return err
