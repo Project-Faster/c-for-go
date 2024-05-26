@@ -277,28 +277,37 @@ func (c *Process) Flush(noCGO bool) error {
 	}
 
 	if !noCGO {
+		log.Printf("writing go package files\n")
 		pkg := filepath.Base(c.cfg.Generator.PackageName)
 		if err := writeGoFile(BufMain, pkg); err != nil {
 			return err
 		}
+		log.Printf("writing go package files\n")
 	}
+	log.Printf("writing go files\n")
 	for opt, name := range goBufferNames {
+		log.Printf("writing %s\n", name)
 		if err := writeGoFile(opt, name); err != nil {
 			return err
 		}
 	}
+	log.Printf("writing go files done\n")
 	if noCGO {
 		return nil
 	}
 	if c.chHelpersBuf.Len() > 0 {
+		log.Printf("writing cgo header helper files\n")
 		if err := writeCHFile(c.chHelpersBuf, "cgo_helpers"); err != nil {
 			return err
 		}
+		log.Printf("writing cgo header helper files\n")
 	}
 	if c.ccHelpersBuf.Len() > 0 {
+		log.Printf("writing cgo helper files\n")
 		if err := writeCCFile(c.ccHelpersBuf, "cgo_helpers"); err != nil {
 			return err
 		}
+		log.Printf("writing cgo helper files\n")
 	}
 	return nil
 }

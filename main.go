@@ -20,7 +20,7 @@ var (
 	ccDefs     = flag.Bool("ccdefs", false, "Use built-in defines from a hosted C-compiler.")
 	ccIncl     = flag.Bool("ccincl", false, "Use built-in sys include paths from a hosted C-compiler.")
 	maxMem     = flag.String("maxmem", "0x7fffffff", "Specifies platform's memory cap the generated code.")
-	fancy      = flag.Bool("fancy", true, "Enable fancy output in the term.")
+	fancy      = flag.Bool("fancy", false, "Enable fancy output in the term.")
 	nostamp    = flag.Bool("nostamp", false, "Disable printing timestamps in the output files.")
 	syncCGO    = flag.Bool("withsync", false, "Enable synchronous locks for CGO methods.")
 	debug      = flag.Bool("debug", false, "Enable some debug info.")
