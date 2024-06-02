@@ -83,10 +83,14 @@ func ParseWith(cfg *Config) (*cc.AST, error) {
 	// Let cc provide all predefines and builtins. Only append custom definitions.
 	ccConfig.Predefined += predefined
 	ccConfig.IncludePaths = append(ccConfig.IncludePaths, cfg.IncludePaths...)
+	for _, includePath := range cfg.IncludePaths {
+		log.Printf("Include path: %s\n", includePath)
+	}
 	var sources []cc.Source
 	sources = append(sources, cc.Source{Name: "<predefined>", Value: ccConfig.Predefined})
 	sources = append(sources, cc.Source{Name: "<builtin>", Value: cc.Builtin})
 	for _, sourceEntry := range cfg.SourcesPaths {
+		log.Printf("Source file to parse: %s\n", sourceEntry)
 		sources = append(sources, cc.Source{
 			Name: sourceEntry,
 		})
@@ -155,13 +159,24 @@ func hostCppConfig(cpp string, opts ...string) (predefined string, includePaths,
 		nullPath = "nul"
 		newLine = "\r\n"
 	}
-	args := append(append([]string{"-dM"}, opts...), nullPath)
+	var preArgs []string
+	var outArgs []string
+	if runtime.GOOS == "darwin" {
+		// gcc on darwin arm64 has issues with -dM and /dev/null
+		preArgs = append([]string{"-x", "c++", "-E"}, opts...)
+		outArgs = append([]string{"-x", "c++", "-v", "-E"}, opts...)
+	} else {
+		preArgs = append([]string{"-dM"}, opts...)
+		outArgs = append([]string{"-v"}, opts...)
+	}
+
+	args := append(preArgs, nullPath)
 	pre, err := exec.Command(cpp, args...).CombinedOutput()
 	if err != nil {
 		return "", nil, nil, err
 	}
 
-	args = append(append([]string{"-v"}, opts...), nullPath)
+	args = append(outArgs, nullPath)
 	out, err := exec.Command(cpp, args...).CombinedOutput()
 	if err != nil {
 		return "", nil, nil, err

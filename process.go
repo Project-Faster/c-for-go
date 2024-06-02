@@ -112,7 +112,7 @@ func NewProcess(configPath, outputPath string) (*Process, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("Translator end")
+	log.Printf("Parser end")
 
 	if cfg.Translator == nil {
 		cfg.Translator = &translator.Config{}
