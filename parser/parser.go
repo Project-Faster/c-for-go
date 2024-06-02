@@ -83,6 +83,9 @@ func ParseWith(cfg *Config) (*cc.AST, error) {
 	// Let cc provide all predefines and builtins. Only append custom definitions.
 	ccConfig.Predefined += predefined
 	ccConfig.IncludePaths = append(ccConfig.IncludePaths, cfg.IncludePaths...)
+	for _, includePath := range ccConfig.SysIncludePaths {
+		log.Printf("Include path (system): %s\n", includePath)
+	}
 	for _, includePath := range cfg.IncludePaths {
 		log.Printf("Include path: %s\n", includePath)
 	}
