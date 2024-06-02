@@ -82,10 +82,11 @@ func ParseWith(cfg *Config) (*cc.AST, error) {
 	ccConfig, _ := cc.NewConfig(runtime.GOOS, cfg.Arch)
 	// Let cc provide all predefines and builtins. Only append custom definitions.
 	ccConfig.Predefined += predefined
-	ccConfig.IncludePaths = append(ccConfig.IncludePaths, cfg.IncludePaths...)
+	ccConfig.SysIncludePaths = append(ccConfig.SysIncludePaths, cfg.IncludePaths...)
 	for _, includePath := range ccConfig.SysIncludePaths {
 		log.Printf("Include path (system): %s\n", includePath)
 	}
+	ccConfig.IncludePaths = append(ccConfig.IncludePaths, cfg.IncludePaths...)
 	for _, includePath := range cfg.IncludePaths {
 		log.Printf("Include path: %s\n", includePath)
 	}
