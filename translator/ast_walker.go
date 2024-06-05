@@ -2,9 +2,9 @@ package translator
 
 import (
 	"fmt"
+	"modernc.org/cc/v4"
 	"strings"
 
-	"modernc.org/cc/v4"
 	"modernc.org/token"
 )
 
@@ -372,6 +372,9 @@ func (t *Translator) typeSpec(typ cc.Type, name string, deep int, isConst bool, 
 		spec.Unsigned = true
 	case cc.Float:
 		spec.Base = "float"
+	case cc.Float128:
+		spec.Base = "float"
+		spec.Long = true
 	case cc.Double:
 		spec.Base = "double"
 	case cc.LongDouble:

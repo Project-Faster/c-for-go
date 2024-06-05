@@ -2,6 +2,8 @@ module github.com/Project-Faster/c-for-go
 
 go 1.17
 
+replace modernc.org/cc/v4 => ./deps/ccv4
+
 require (
 	github.com/stretchr/testify v1.6.1
 	github.com/tj/go-spin v1.1.0
